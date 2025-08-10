@@ -1,0 +1,125 @@
+# Environment Configuration for Agentic-Ecom
+# Controls API behavior, safety modes, and environment-specific settings
+
+environments:
+  development:
+    name: "Development"
+    description: "Local development with mock APIs and safety measures"
+    api_mode: "mock"  # mock, sandbox, production
+    safety_mode: "strict"
+    features:
+      dry_run: true
+      mock_apis: true
+      safe_mode: true
+      budget_limits: 0.01  # $0.01 max spend
+      require_confirmation: true
+    logging:
+      level: "DEBUG"
+      log_all_api_calls: true
+      log_budget_events: true
+    notifications:
+      email_alerts: false
+      slack_alerts: false
+      console_alerts: true
+
+  staging:
+    name: "Staging"
+    description: "Pre-production testing with sandbox APIs"
+    api_mode: "sandbox"
+    safety_mode: "moderate"
+    features:
+      dry_run: false
+      mock_apis: false
+      safe_mode: true
+      budget_limits: 10.00  # $10 max spend
+      require_confirmation: true
+    logging:
+      level: "INFO"
+      log_all_api_calls: true
+      log_budget_events: true
+    notifications:
+      email_alerts: true
+      slack_alerts: false
+      console_alerts: true
+
+  production:
+    name: "Production"
+    description: "Live production environment"
+    api_mode: "production"
+    safety_mode: "monitoring"
+    features:
+      dry_run: false
+      mock_apis: false
+      safe_mode: false
+      budget_limits: 1000.00  # $1000 max spend
+      require_confirmation: false
+    logging:
+      level: "WARNING"
+      log_all_api_calls: false
+      log_budget_events: true
+    notifications:
+      email_alerts: true
+      slack_alerts: true
+      console_alerts: false
+
+# Current environment (change this to switch modes)
+current_environment: "development"
+
+# Safety configurations
+safety:
+  max_daily_spend: 0.01  # Development: $0.01, Staging: $10, Production: $1000
+  max_campaign_budget: 0.01
+  require_human_approval: true
+  auto_pause_on_anomaly: true
+  anomaly_threshold: 0.5  # 50% above normal spend
+  
+# API behavior by platform
+platforms:
+  meta_ads:
+    development:
+      use_mock: true
+      max_budget: 0.01
+      require_approval: true
+    staging:
+      use_mock: false
+      use_sandbox: true
+      max_budget: 10.00
+      require_approval: true
+    production:
+      use_mock: false
+      use_sandbox: false
+      max_budget: 1000.00
+      require_approval: false
+      
+  pinterest_ads:
+    development:
+      use_mock: true
+      max_budget: 0.01
+      require_approval: true
+    staging:
+      use_mock: false
+      use_sandbox: true
+      max_budget: 10.00
+      require_approval: true
+    production:
+      use_mock: false
+      use_sandbox: false
+      max_budget: 1000.00
+      require_approval: false
+      
+  shopify:
+    development:
+      use_mock: true
+      create_products: false
+      update_products: false
+      require_approval: true
+    staging:
+      use_mock: false
+      create_products: true
+      update_products: true
+      require_approval: true
+    production:
+      use_mock: false
+      create_products: true
+      update_products: true
+      require_approval: false 

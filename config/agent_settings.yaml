@@ -1,0 +1,35 @@
+# Agent Configuration Settings
+
+sales_genie:
+  ai_model: "gpt-4o"
+  max_tokens: 1000
+  temperature: 0.7
+  features:
+    product_research: true
+    listing_generation: true
+    ad_creative: true
+    campaign_optimization: true
+  compliance:
+    strict_mode: true
+    auto_review: true
+
+logibot:
+  ai_model: "claude-3-5-sonnet-20241022"
+  max_tokens: 500
+  temperature: 0.5
+  features:
+    customer_support: true
+    fraud_detection: true
+    process_optimization: true
+    order_fulfillment: true
+  automation:
+    auto_support_responses: true
+    fraud_analysis: true
+    process_optimization: true
+
+# Global Settings
+system:
+  kill_switch_file: "status.lock"
+  log_retention_days: 14
+  max_retry_attempts: 3
+  rate_limit_delay: 1.0

@@ -1,0 +1,107 @@
+# Rate Limiting Configuration for Agentic-Ecom API
+# Controls API abuse prevention and request throttling
+
+# Global rate limiting settings
+global:
+  max_requests: 100  # Maximum requests per window
+  window_minutes: 15  # Time window in minutes
+  burst_limit: 20     # Burst requests allowed
+
+# Endpoint-specific rate limiting
+endpoints:
+  # Authentication endpoints
+  auth:
+    login:
+      max_requests: 10      # 10 login attempts per window
+      window_minutes: 15    # 15 minutes
+      burst_limit: 3        # 3 burst attempts allowed
+    
+    refresh:
+      max_requests: 30      # 30 refresh attempts per window
+      window_minutes: 15
+      burst_limit: 5
+  
+  # Write operations (more restrictive)
+  write_operations:
+    products:
+      max_requests: 20      # 20 product operations per window
+      window_minutes: 15
+      burst_limit: 5
+    
+    triggers:
+      max_requests: 10      # 10 trigger operations per window
+      window_minutes: 15
+      burst_limit: 2
+    
+    safety:
+      max_requests: 30      # 30 safety operations per window
+      window_minutes: 15
+      burst_limit: 5
+  
+  # Read operations (less restrictive)
+  read_operations:
+    products:
+      max_requests: 200     # 200 product reads per window
+      window_minutes: 15
+      burst_limit: 20
+    
+    analytics:
+      max_requests: 100     # 100 analytics requests per window
+      window_minutes: 15
+      burst_limit: 10
+    
+    customers:
+      max_requests: 150     # 150 customer reads per window
+      window_minutes: 15
+      burst_limit: 15
+
+# Rate limiting by user role
+roles:
+  admin:
+    multiplier: 2.0         # Admins get 2x the normal limits
+    burst_multiplier: 1.5
+  
+  analytics:
+    multiplier: 1.5         # Analytics users get 1.5x the normal limits
+    burst_multiplier: 1.2
+  
+  sales:
+    multiplier: 1.2         # Sales users get 1.2x the normal limits
+    burst_multiplier: 1.1
+  
+  support:
+    multiplier: 1.0         # Support users get normal limits
+    burst_multiplier: 1.0
+  
+  user:
+    multiplier: 0.8         # Regular users get 0.8x the normal limits
+    burst_multiplier: 0.8
+
+# Rate limiting by environment
+environments:
+  development:
+    multiplier: 3.0         # 3x limits in development
+    burst_multiplier: 2.0
+  
+  staging:
+    multiplier: 2.0         # 2x limits in staging
+    burst_multiplier: 1.5
+  
+  production:
+    multiplier: 1.0         # Normal limits in production
+    burst_multiplier: 1.0
+
+# Rate limiting headers
+headers:
+  enabled: true
+  limit_header: "X-RateLimit-Limit"
+  remaining_header: "X-RateLimit-Remaining"
+  reset_header: "X-RateLimit-Reset"
+  retry_after_header: "Retry-After"
+
+# Rate limiting responses
+responses:
+  too_many_requests:
+    status_code: 429
+    message: "Rate limit exceeded. Please try again later."
+    retry_after: 60  # seconds

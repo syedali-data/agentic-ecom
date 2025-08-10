@@ -1,0 +1,17 @@
+meta_ads:
+  default:
+    daily_budget_usd: 200
+    min_roas: 2.5
+  campaigns:
+    meta_camp1:
+      daily_budget_usd: 300
+      min_roas: 3.0
+
+pinterest_ads:
+  default:
+    daily_budget_usd: 100
+    min_roas: 2.0
+  campaigns:
+    pinterest_camp1:
+      daily_budget_usd: 150
+      min_roas: 2.4

@@ -1,0 +1,610 @@
+{
+  "name": "Agentic-Ecom Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-schedule",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-kill-switch",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "STOP",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "kill-switch-check",
+      "name": "Kill Switch Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "url": "http://localhost:8000/health",
+        "options": {}
+      },
+      "id": "api-health-check",
+      "name": "API Health Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-api-health",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "operational",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "api-health-validator",
+      "name": "API Health Validator",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "url": "http://localhost:8000/analytics/performance",
+        "options": {}
+      },
+      "id": "fetch-analytics",
+      "name": "Fetch Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "url": "http://localhost:8000/products",
+        "options": {}
+      },
+      "id": "fetch-products",
+      "name": "Fetch Products",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-low-inventory",
+              "leftValue": "={{ $json.total_products }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "inventory-check",
+      "name": "Inventory Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/trigger/sales-genie",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "generate_products"
+            },
+            {
+              "name": "count",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-sales-genie",
+      "name": "Trigger SalesGenie",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-low-performance",
+              "leftValue": "={{ $json.total_orders }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "performance-check",
+      "name": "Performance Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/trigger/ad-optimization",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "optimize_campaigns"
+            },
+            {
+              "name": "platform",
+              "value": "all"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-ad-optimization",
+      "name": "Trigger Ad Optimization",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-support-tickets",
+              "leftValue": "={{ $json.support_tickets }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "support-check",
+      "name": "Support Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1340, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/trigger/logibot",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "process_support"
+            },
+            {
+              "name": "priority",
+              "value": "high"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-logibot",
+      "name": "Trigger LogiBot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-budget-exceeded",
+              "leftValue": "={{ $json.daily_spend }}",
+              "rightValue": "={{ $json.max_budget * 0.8 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "budget-check",
+      "name": "Budget Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1340, 800]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/trigger/emergency-stop",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "reason",
+              "value": "budget_limit_exceeded"
+            },
+            {
+              "name": "threshold",
+              "value": "80%"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "emergency-stop",
+      "name": "Emergency Stop",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 800]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-success",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "success-check",
+      "name": "Success Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1780, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/log/automation",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "automation_completed"
+            },
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-success",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "http://localhost:8000/log/automation",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "automation_failed"
+            },
+            {
+              "name": "status",
+              "value": "error"
+            },
+            {
+              "name": "error",
+              "value": "={{ $json.error }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-error",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2000, 500]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Kill Switch Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kill Switch Check": {
+      "main": [
+        [
+          {
+            "node": "API Health Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Health Check": {
+      "main": [
+        [
+          {
+            "node": "API Health Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Health Validator": {
+      "main": [
+        [
+          {
+            "node": "Fetch Analytics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Analytics": {
+      "main": [
+        [
+          {
+            "node": "Performance Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Budget Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Products": {
+      "main": [
+        [
+          {
+            "node": "Inventory Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Support Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inventory Check": {
+      "main": [
+        [
+          {
+            "node": "Trigger SalesGenie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Performance Check": {
+      "main": [
+        [
+          {
+            "node": "Trigger Ad Optimization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Support Check": {
+      "main": [
+        [
+          {
+            "node": "Trigger LogiBot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Budget Check": {
+      "main": [
+        [
+          {
+            "node": "Emergency Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger SalesGenie": {
+      "main": [
+        [
+          {
+            "node": "Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Ad Optimization": {
+      "main": [
+        [
+          {
+            "node": "Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger LogiBot": {
+      "main": [
+        [
+          {
+            "node": "Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emergency Stop": {
+      "main": [
+        [
+          {
+            "node": "Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Check": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+} 

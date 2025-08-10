@@ -1,0 +1,33 @@
+# API Keys Configuration
+# Copy this file to .env or set as environment variables
+
+openai:
+  api_key: "sk-your-openai-api-key-here"
+  model: "gpt-4o"
+  max_tokens: 1000
+  temperature: 0.7
+
+anthropic:
+  api_key: "sk-ant-your-anthropic-api-key-here"
+  model: "claude-3-5-sonnet-20241022"
+  max_tokens: 500
+  temperature: 0.5
+
+shopify:
+  store_domain: "your-store.myshopify.com"
+  access_token: "your-shopify-access-token"
+
+meta_ads:
+  access_token: "your-meta-access-token"
+  ad_account_id: "your-ad-account-id"
+
+pinterest_ads:
+  access_token: "your-pinterest-access-token"
+  ad_account_id: "your-pinterest-ad-account-id"
+
+# Optional: CJ Dropshipping API
+cj_dropshipping:
+  api_key: "your-cj-api-key"
+  warehouse_id: "your-warehouse-id"
+
+

@@ -1,0 +1,15 @@
+banned_keywords:
+  - weight loss
+  - pill
+  - cure
+  - guaranteed results
+  - medical grade
+  - quick weight loss
+  - covid
+regions:
+  canada:
+    banned_product_categories:
+      - supplements
+      - weapons
+      - CBD
+      - prescription drugs

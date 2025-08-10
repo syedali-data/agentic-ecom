@@ -1,0 +1,97 @@
+# Database Configuration Settings for Agentic-Ecom
+# This file contains database-related configuration for different environments
+
+database:
+  # Connection settings
+  connection:
+    url: "sqlite:///./agentic_ecom.db"  # Default for development
+    pool_size: 10
+    max_overflow: 20
+    pool_timeout: 30
+    pool_recycle: 3600
+    
+  # Migration settings
+  migrations:
+    auto_migrate: true
+    backup_before_migrate: true
+    migration_dir: "db/migrations"
+    
+  # Backup settings
+  backup:
+    enabled: true
+    schedule: "daily"  # daily, weekly, monthly
+    retention_days: 30
+    backup_dir: "backups/"
+    
+  # Performance settings
+  performance:
+    enable_query_logging: false
+    slow_query_threshold: 1000  # milliseconds
+    connection_pool_pre_ping: true
+    enable_connection_pooling: true
+    
+  # Security settings
+  security:
+    encrypt_connections: false  # Enable for production
+    ssl_mode: "prefer"  # require, prefer, allow, disable
+    connection_timeout: 30
+    
+  # Monitoring settings
+  monitoring:
+    enable_health_checks: true
+    health_check_interval: 300  # seconds
+    enable_metrics: true
+    log_slow_queries: true
+    
+  # Development settings
+  development:
+    echo_sql: false  # Set to true for SQL debugging
+    create_tables_automatically: true
+    seed_sample_data: true
+    enable_debug_mode: true
+    
+  # Production settings
+  production:
+    echo_sql: false
+    create_tables_automatically: false
+    seed_sample_data: false
+    enable_debug_mode: false
+    connection_pool_size: 20
+    max_overflow: 30
+    
+  # Testing settings
+  testing:
+    url: "sqlite:///./test_agentic_ecom.db"
+    echo_sql: false
+    create_tables_automatically: true
+    seed_sample_data: false
+    enable_debug_mode: true
+
+# Environment-specific overrides
+environments:
+  development:
+    database:
+      connection:
+        url: "sqlite:///./agentic_ecom.db"
+      development:
+        echo_sql: true
+        seed_sample_data: true
+        
+  production:
+    database:
+      connection:
+        url: "postgresql://user:password@localhost/agentic_ecom"
+      production:
+        echo_sql: false
+        seed_sample_data: false
+      security:
+        encrypt_connections: true
+        ssl_mode: "require"
+        
+  testing:
+    database:
+      connection:
+        url: "sqlite:///./test_agentic_ecom.db"
+      testing:
+        echo_sql: false
+        seed_sample_data: false 
